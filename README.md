@@ -2,15 +2,16 @@
 
 ## 📘 Descrição do Projeto
 
-Esta é uma **API REST** desenvolvida com **Spring Boot**, parte do projeto **Aluno Online**.
-A API tem como objetivo **gerenciar informações de alunos**, permitindo operações de **cadastro, listagem e busca por ID**.
+Esta é uma **API REST** desenvolvida por **Kayo Brenno**, como parte da **Primeira Avaliação da disciplina de Tecnologia para Back-End**.
+
+A API tem como objetivo **gerenciar informações de alunos**, permitindo operações de **cadastro, listagem e busca por ID**, utilizando **Java com Spring Boot**, integração com banco de dados **PostgreSQL** (acessado via **DBeaver**) e testes realizados no **Insomnia**.
 
 ---
 
 ## ⚙️ Tecnologias Utilizadas
 
-* **Java 17+**
-* **Spring Boot** (Web, Data JPA)
+* **Java 17**
+* **Spring Boot**
 * **Maven**
 * **Banco de Dados:** PostgreSQL
 * **Ferramentas Utilizadas:**
