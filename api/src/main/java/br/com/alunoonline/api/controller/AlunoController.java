@@ -9,28 +9,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/alunos")
+@RestController // Define a classe como um controlador REST que responde requisições HTTP.
+@RequestMapping("/alunos") // Define o endpoint base para as requisições HTTP relacionadas a alunos.
 public class AlunoController {
 
-    @Autowired
+    @Autowired // Injeta automaticamente o Service gerenciado pelo Spring
     AlunoService alunoService;
 
-    @PostMapping
+
+    @PostMapping // Indica que o metodo abaixo é um POST
     @ResponseStatus(HttpStatus.CREATED)
-    public void criarAluno(@RequestBody Aluno aluno) {
+    public void criarAluno(@RequestBody Aluno aluno) { // A anotação transforma o JSON recebido na requisição em um objeto Java.
+
         alunoService.criarAluno(aluno);
     }
 
-    @GetMapping
+    @GetMapping// Indica que o metodo abaixo é um GET
     @ResponseStatus(HttpStatus.OK)
     public List<Aluno> buscarTodosAlunos() {
         return alunoService.buscarTodosAlunos();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")// Indica que o metodo abaixo é um GET por {id}
     @ResponseStatus(HttpStatus.OK)
-    public Optional<Aluno> buscarAlunoPorId(@PathVariable long id){
+    public Optional<Aluno> buscarAlunoPorId(@PathVariable long id){ // A anotação indica que a variavel está no caminho!
         return alunoService.buscarAlunoPorId(id);
     }
 
