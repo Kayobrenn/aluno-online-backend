@@ -20,7 +20,6 @@ public class AlunoController {
     @PostMapping // Indica que o metodo abaixo é um POST
     @ResponseStatus(HttpStatus.CREATED)
     public void criarAluno(@RequestBody Aluno aluno) { // A anotação transforma o JSON recebido na requisição em um objeto Java.
-
         alunoService.criarAluno(aluno);
     }
 
