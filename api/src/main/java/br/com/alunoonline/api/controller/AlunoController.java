@@ -16,7 +16,6 @@ public class AlunoController {
     @Autowired // Injeta automaticamente o Service gerenciado pelo Spring
     AlunoService alunoService;
 
-
     @PostMapping // Indica que o metodo abaixo é um POST
     @ResponseStatus(HttpStatus.CREATED)
     public void criarAluno(@RequestBody Aluno aluno) { // A anotação transforma o JSON recebido na requisição em um objeto Java.
@@ -33,6 +32,18 @@ public class AlunoController {
     @ResponseStatus(HttpStatus.OK)
     public Optional<Aluno> buscarAlunoPorId(@PathVariable long id){ // A anotação indica que a variavel está no caminho!
         return alunoService.buscarAlunoPorId(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletarAlunoPorId(@PathVariable long id){
+        alunoService.deletarAlunoPorId(id);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void atualizarAlunoPorId(@PathVariable long id, @RequestBody Aluno AlunoAtualizado) {
+        alunoService.atualizarAlunoPorId(id, AlunoAtualizado);
     }
 
 }
