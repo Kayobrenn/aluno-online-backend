@@ -43,7 +43,6 @@ public class ProfessorService {
         professorParaEditar.setNomeCompleto(professorAtualizado.getNomeCompleto());
         professorParaEditar.setEmail(professorAtualizado.getEmail());
         professorParaEditar.setCpf(professorAtualizado.getCpf());
-        professorParaEditar.setCargo(professorAtualizado.getCargo());
 
         professorRepository.save(professorParaEditar);
     }
