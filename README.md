@@ -31,7 +31,7 @@ A API tem como objetivo **gerenciar informações de alunos**, permitindo opera�
 
 ---
 
-## 📬 Testes no Insomnia
+## 📬 Testes no Insomnia - CRUD aluno
 
 ### 🔹 **POST – Criar Aluno**
 
@@ -80,6 +80,75 @@ A tabela principal criada automaticamente pelo Spring Data JPA é chamada alunos
 ## 📸 Print do banco no DBeaver:
 
 <img width="1919" height="1021" alt="BD" src="https://github.com/user-attachments/assets/f3654d35-e846-4585-9883-8fa8b27da64d" />
+
+## 📬 Testes no Insomnia - CRUD Professor
+
+### 🔹 **POST – Criar Professor**
+
+Requisição para criar um novo professor no sistema:
+
+```json
+{
+  "nomeCompleto": "Kayo Brenno Gomes Cunha",
+  "email": "kayobrenno4@gmail.com",
+  "cpf": "154.130.224-92"
+}
+```
+
+📸 **Print da requisição POST:**
+
+<img width="1920" height="1020" alt="criarProfessor" src="https://github.com/user-attachments/assets/6096dbda-f25d-4089-8071-13a4cde16be6" />
+
+---
+
+### 🔹 **GET – Buscar Todos os Professores**
+
+Requisição para listar todos os professores cadastrados:
+
+📸 **Print da requisição GET `/professores`:**
+
+<img width="1920" height="1020" alt="buscarTodosProfessores" src="https://github.com/user-attachments/assets/bb67104f-4398-42b9-bc7a-f67ef7d4e274" />
+
+---
+
+### 🔹 **GET – Buscar Professor por ID**
+
+Requisição que retorna os dados de um professor específico, conforme o ID informado na URL.
+
+📸 **Print da requisição GET `/professor/{id}`:**
+
+<img width="1920" height="1020" alt="buscarProfessoresPorId" src="https://github.com/user-attachments/assets/63230cd1-63a7-4418-8d3f-4056281bc3ae" />
+
+---
+
+### 🔹 **PUT – Atualizar Professor por ID**
+
+Requisição que atualiza todos os dados de um professor específico, conforme o ID informado na URL.
+
+📸 **Print da requisição PUT `/professores/{id}`:**
+
+<img width="1920" height="1020" alt="atualizarProfessorPorId" src="https://github.com/user-attachments/assets/a6fcbf22-07bd-43d1-b19a-d2be79636603" />
+
+---
+
+### 🔹 **DEL – Deletar Professor por ID**
+
+Requisição deleta os dados de um professor específico, conforme o ID informado na URL.
+
+📸 **Print da requisição DEL `/professores/{id}`:**
+
+<img width="1920" height="1020" alt="deletarProfessorPorId" src="https://github.com/user-attachments/assets/8881139b-b35f-4993-9a71-ad98c5124db5" />
+
+---
+
+### 📊 Banco de Dados (PostgreSQL)
+
+O sistema utiliza um banco de dados PostgreSQL para persistência dos dados dos alunos.
+A tabela principal criada automaticamente pelo Spring Data JPA é chamada professor.
+
+## 📸 Print do banco no DBeaver:
+
+<img width="1920" height="1020" alt="BD" src="https://github.com/user-attachments/assets/eaee597b-74a1-4a84-aa0a-d568b78eef1b" />
 
 ## ✅ Observações Finais
 
