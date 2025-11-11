@@ -1,9 +1,5 @@
 package br.com.alunoonline.api.controller;
-
-import br.com.alunoonline.api.model.Aluno;
 import br.com.alunoonline.api.model.Disciplina;
-import br.com.alunoonline.api.repository.DisciplinaRepository;
-import br.com.alunoonline.api.service.AlunoService;
 import br.com.alunoonline.api.service.DisciplinaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
