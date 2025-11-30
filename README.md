@@ -2,158 +2,412 @@
 
 ## 📘 Descrição do Projeto
 
-Esta é uma **API REST** desenvolvida por **Kayo Brenno**, como parte da **Primeira Avaliação da disciplina de Tecnologia para Back-End**.
+Esta é uma **API REST** desenvolvida por **Kayo Brenno**, como **projeto de conclusão da disciplina de Tecnologia para Back-End**, com foco em construção de serviços RESTful utilizando **Java com Spring Boot** e integração com **PostgreSQL**.
 
-A API tem como objetivo **gerenciar informações de alunos**, permitindo operações de **cadastro, listagem e busca por ID**, utilizando **Java com Spring Boot**, integração com banco de dados **PostgreSQL** (acessado via **DBeaver**) e testes realizados no **Insomnia**.
+O objetivo da API é **gerenciar o fluxo acadêmico do aluno no sistema Aluno Online**, permitindo operações como:
+
+- Cadastro e gerenciamento de **alunos** e **professores**
+- Cadastro e gerenciamento de **disciplinas**
+- **Matrícula** de alunos em disciplinas
+- **Atualização de notas** e **emissão de histórico escolar**
+- Operações de **trancamento de matrícula**
+
+Todo o consumo da API foi testado via **Insomnia**, e o banco de dados é acompanhado pelo **DBeaver**.
 
 ---
 
 ## ⚙️ Tecnologias Utilizadas
 
-* **Java 17**
-* **Spring Boot**
-* **Maven**
-* **Banco de Dados:** PostgreSQL
-* **Ferramentas Utilizadas:**
+- **Java 17**
+- **Spring Boot**
+- **Maven**
+- **Banco de Dados:** PostgreSQL
 
-  * **Insomnia** → Teste das requisições HTTP
-  * **DBeaver** → Visualização e manipulação do banco de dados
+**Ferramentas de Apoio:**
 
----
-
-## 🧠 Endpoints Principais
-
-| Método | Rota           | Descrição                         |
-| :----: | :------------- | :-------------------------------- |
-| `POST` | `/alunos`      | Cadastra um novo aluno            |
-|  `GET` | `/alunos`      | Lista todos os alunos             |
-|  `GET` | `/alunos/{id}` | Busca um aluno específico pelo ID |
+- **Insomnia** → Teste das requisições HTTP  
+- **DBeaver** → Visualização e manipulação das tabelas do banco de dados
 
 ---
 
-## 📬 Testes no Insomnia - CRUD aluno
+## 🧩 Visão Geral dos Módulos da API
 
-### 🔹 **POST – Criar Aluno**
+| Módulo            | Descrição geral                                                                 |
+|-------------------|---------------------------------------------------------------------------------|
+| **Alunos**        | CRUD completo de alunos                                                         |
+| **Professores**   | CRUD completo de professores                                                    |
+| **Disciplinas**   | CRUD completo de disciplinas ofertadas                                          |
+| **Matrículas**    | Matrícula de alunos em disciplinas, trancamento de matrícula e atualização de notas |
+| **Histórico**     | Emissão do histórico acadêmico consolidado do aluno                            |
 
-Requisição para criar um novo aluno no sistema:
+> O histórico acadêmico é emitido a partir das informações de matrícula, disciplinas e notas do aluno.
 
-```json
+---
+
+## 🧠 Endpoints Principais (Resumo)
+
+Abaixo um resumo dos endpoints organizados por módulo.  
+As seções seguintes detalham exemplos de requisição e prints das chamadas no Insomnia.
+
+### 👨‍🎓 Módulo Alunos
+
+Base: `/alunos`
+
+| Método   | Rota             | Descrição                         |
+|:--------:|------------------|-----------------------------------|
+| `POST`   | `/alunos`        | Cadastra um novo aluno            |
+| `GET`    | `/alunos`        | Lista todos os alunos             |
+| `GET`    | `/alunos/{id}`   | Busca um aluno específico pelo ID |
+| `PUT`    | `/alunos/{id}`   | Atualiza os dados de um aluno     |
+| `DELETE` | `/alunos/{id}`   | Remove um aluno pelo ID           |
+
+---
+
+### 👨‍🏫 Módulo Professores
+
+Base: `/professores`
+
+| Método   | Rota                   | Descrição                                   |
+|:--------:|------------------------|---------------------------------------------|
+| `POST`   | `/professores`         | Cadastra um novo professor                  |
+| `GET`    | `/professores`         | Lista todos os professores                  |
+| `GET`    | `/professores/{id}`    | Busca um professor específico pelo ID       |
+| `PUT`    | `/professores/{id}`    | Atualiza os dados completos de um professor |
+| `DELETE` | `/professores/{id}`    | Remove um professor pelo ID                 |
+
+---
+
+### 📚 Módulo Disciplinas
+
+Base: `/disciplinas`
+
+| Método   | Rota                    | Descrição                             |
+|:--------:|-------------------------|---------------------------------------|
+| `POST`   | `/disciplinas`          | Cadastra uma nova disciplina          |
+| `GET`    | `/disciplinas`          | Lista todas as disciplinas            |
+| `GET`    | `/disciplinas/{id}`     | Busca uma disciplina específica pelo ID |
+| `PUT`    | `/disciplinas/{id}`     | Atualiza os dados de uma disciplina   |
+| `DELETE` | `/disciplinas/{id}`     | Remove uma disciplina pelo ID         |
+
+---
+
+### 🎓 Módulo Matrículas & Histórico
+
+Base: `/matriculas`
+
+| Método  | Rota                                      | Descrição                                                      |
+|:-------:|-------------------------------------------|----------------------------------------------------------------|
+| `POST`  | `/matriculas`                             | Realiza a matrícula de um aluno em uma disciplina             |
+| `PATCH` | `/matriculas/trancar/{id}`                | Tranca a matrícula de um aluno (altera o status da matrícula) |
+| `PATCH` | `/matriculas/atualizar-notas/{id}`        | Atualiza as notas de uma matrícula específica                 |
+| `GET`   | `/matriculas/emitir-historico/{alunoId}`  | Emite o histórico acadêmico consolidado do aluno              |
+
+> Nos endpoints de matrícula são utilizados métodos `PATCH` para representar atualizações parciais de recursos (ex.: apenas status de matrícula ou notas).
+
+---
+
+## 📬 Testes no Insomnia – CRUD Aluno
+
+### 🔹 `POST /alunos` – Criar Aluno
+
+Exemplo de corpo da requisição para criar um novo aluno:
+
+~~~json
 {
-  "nomeCompleto": "Ryan Richard",
-  "email": "ryanrichard456@gmail.com",
-  "cpf": "020.178.964-78"
+  "nomeCompleto": "Juliana Souza de Almeida",
+  "email": "juliana.almeida@example.com",
+  "cpf": "769.135.402-61"
 }
-```
+~~~
 
-📸 **Print da requisição POST:**
+<details>
+  <summary>📸 Clique para ver o print da requisição POST</summary>
 
-<img width="1918" height="1016" alt="Request Post" src="https://github.com/user-attachments/assets/f4449acb-115d-4341-89a9-4567dc458d1b" />
+  <img width="1919" height="1017" alt="Request Post" src="https://github.com/user-attachments/assets/2b6e8230-d616-4941-a3df-29ef926c0879" />
 
----
-
-### 🔹 **GET – Buscar Todos os Alunos**
-
-Requisição para listar todos os alunos cadastrados:
-
-📸 **Print da requisição GET `/alunos`:**
-
-<img width="1919" height="1018" alt="Request findAll (2)" src="https://github.com/user-attachments/assets/f361d820-5c17-4b99-a70e-65d805ea11f1" />
-
+</details>
 
 ---
 
-### 🔹 **GET – Buscar Aluno por ID**
+### 🔹 `GET /alunos` – Buscar Todos os Alunos
+
+Requisição para listar todos os alunos cadastrados.
+
+<details>
+  <summary>📸 Clique para ver o print da requisição GET /alunos</summary>
+
+  <img width="1919" height="1021" alt="Request findAll (2)" src="https://github.com/user-attachments/assets/920065e4-0c7e-466c-944c-9ab8d2add77d" />
+
+</details>
+
+---
+
+### 🔹 `GET /alunos/{id}` – Buscar Aluno por ID
 
 Requisição que retorna os dados de um aluno específico, conforme o ID informado na URL.
 
-📸 **Print da requisição GET `/alunos/{id}`:**
+<details>
+  <summary>📸 Clique para ver o print da requisição GET /alunos/{id}</summary>
 
-<img width="1919" height="1014" alt="Request by Id" src="https://github.com/user-attachments/assets/6ea3a9c6-be2d-4317-bdce-29aeb61a4076" />
+  <img width="1920" height="1020" alt="Request by Id" src="https://github.com/user-attachments/assets/a1279fe0-e011-4f29-ba38-cb3f5fc215d6" />
+
+</details>
 
 ---
 
-### 📊 Banco de Dados (PostgreSQL)
+## 📊 Banco de Dados – Alunos (PostgreSQL)
 
-O sistema utiliza um banco de dados PostgreSQL para persistência dos dados dos alunos.
-A tabela principal criada automaticamente pelo Spring Data JPA é chamada alunos.
+O sistema utiliza um banco de dados **PostgreSQL** para persistência dos dados dos alunos.  
+A tabela principal criada automaticamente pelo **Spring Data JPA** é chamada `alunos`.
 
-## 📸 Print do banco no DBeaver:
+<details>
+  <summary>📸 Clique para ver o print da tabela de alunos no DBeaver</summary>
 
-<img width="1919" height="1021" alt="BD" src="https://github.com/user-attachments/assets/f3654d35-e846-4585-9883-8fa8b27da64d" />
+  <img width="1920" height="1020" alt="BD" src="https://github.com/user-attachments/assets/f8f0820b-f583-4d3f-859f-4311e9a46fff" />
 
-## 📬 Testes no Insomnia - CRUD Professor
+</details>
 
-### 🔹 **POST – Criar Professor**
+---
 
-Requisição para criar um novo professor no sistema:
+## 📬 Testes no Insomnia – CRUD Professor
 
-```json
+### 🔹 `POST /professores` – Criar Professor
+
+Exemplo de corpo da requisição para criar um novo professor:
+
+~~~json
 {
-  "nomeCompleto": "Kayo Brenno Gomes Cunha",
-  "email": "kayobrenno4@gmail.com",
-  "cpf": "154.130.224-92"
+  "nomeCompleto": "Luciana Martins Cardoso",
+  "email": "luciana.cardoso@example.com",
+  "cpf": "910.375.284-40"
 }
-```
+~~~
 
-📸 **Print da requisição POST:**
+<details>
+  <summary>📸 Clique para ver o print da requisição POST /professores</summary>
 
-<img width="1920" height="1020" alt="criarProfessor" src="https://github.com/user-attachments/assets/6096dbda-f25d-4089-8071-13a4cde16be6" />
+  <img width="1920" height="1020" alt="criarProfessor" src="https://github.com/user-attachments/assets/66d4ee98-fc88-4d30-8e2f-217b97dcc714" />
 
----
-
-### 🔹 **GET – Buscar Todos os Professores**
-
-Requisição para listar todos os professores cadastrados:
-
-📸 **Print da requisição GET `/professores`:**
-
-<img width="1920" height="1020" alt="buscarTodosProfessores" src="https://github.com/user-attachments/assets/bb67104f-4398-42b9-bc7a-f67ef7d4e274" />
+</details>
 
 ---
 
-### 🔹 **GET – Buscar Professor por ID**
+### 🔹 `GET /professores` – Buscar Todos os Professores
+
+Requisição para listar todos os professores cadastrados.
+
+<details>
+  <summary>📸 Clique para ver o print da requisição GET /professores</summary>
+
+  <img width="1920" height="1020" alt="buscarTodosProfessores" src="https://github.com/user-attachments/assets/b0e49bdd-453a-4875-b309-c7e15d9bc93f" />
+
+</details>
+
+---
+
+### 🔹 `GET /professores/{id}` – Buscar Professor por ID
 
 Requisição que retorna os dados de um professor específico, conforme o ID informado na URL.
 
-📸 **Print da requisição GET `/professor/{id}`:**
+<details>
+  <summary>📸 Clique para ver o print da requisição GET /professores/{id}</summary>
 
-<img width="1920" height="1020" alt="buscarProfessoresPorId" src="https://github.com/user-attachments/assets/63230cd1-63a7-4418-8d3f-4056281bc3ae" />
+  <img width="1920" height="1020" alt="buscarProfessorPorId" src="https://github.com/user-attachments/assets/89e9f41d-c7c8-4645-ae1a-204b923d3d05" />
+
+</details>
 
 ---
 
-### 🔹 **PUT – Atualizar Professor por ID**
+### 🔹 `PUT /professores/{id}` – Atualizar Professor
 
 Requisição que atualiza todos os dados de um professor específico, conforme o ID informado na URL.
 
-📸 **Print da requisição PUT `/professores/{id}`:**
+<details>
+  <summary>📸 Clique para ver o print da requisição PUT /professores/{id}</summary>
 
-<img width="1920" height="1020" alt="atualizarProfessorPorId" src="https://github.com/user-attachments/assets/a6fcbf22-07bd-43d1-b19a-d2be79636603" />
+  <img width="1920" height="1020" alt="atualizarProfessorPorId" src="https://github.com/user-attachments/assets/5029318d-2f86-4275-a189-f60414f6958b" />
+  <img width="1920" height="1020" alt="nomeAtualizado" src="https://github.com/user-attachments/assets/50d8f61a-8fdb-4032-9956-4b2dc8886cf4" />
 
----
-
-### 🔹 **DEL – Deletar Professor por ID**
-
-Requisição deleta os dados de um professor específico, conforme o ID informado na URL.
-
-📸 **Print da requisição DEL `/professores/{id}`:**
-
-<img width="1920" height="1020" alt="deletarProfessorPorId" src="https://github.com/user-attachments/assets/8881139b-b35f-4993-9a71-ad98c5124db5" />
+</details>
 
 ---
 
-### 📊 Banco de Dados (PostgreSQL)
+### 🔹 `DELETE /professores/{id}` – Deletar Professor
 
-O sistema utiliza um banco de dados PostgreSQL para persistência dos dados dos alunos.
-A tabela principal criada automaticamente pelo Spring Data JPA é chamada professor.
+Requisição que deleta os dados de um professor específico, conforme o ID informado na URL.
 
-## 📸 Print do banco no DBeaver:
+<details>
+  <summary>📸 Clique para ver o print da requisição DELETE /professores/{id}</summary>
 
-<img width="1920" height="1020" alt="BD" src="https://github.com/user-attachments/assets/eaee597b-74a1-4a84-aa0a-d568b78eef1b" />
+  <img width="1920" height="1020" alt="deletarProfessorPorId" src="https://github.com/user-attachments/assets/741a3780-7d88-4a7d-89c3-2d1bae1f1efa" />
+
+</details>
+
+---
+
+## 📊 Banco de Dados – Professores (PostgreSQL)
+
+Para o módulo de professores, também é utilizado o **PostgreSQL**, com a tabela `professor` gerenciada pelo **Spring Data JPA**.
+
+<details>
+  <summary>📸 Clique para ver o print da tabela de professor no DBeaver</summary>
+
+  <img width="1920" height="1020" alt="BD" src="https://github.com/user-attachments/assets/639a5ddf-3da8-45b8-90ff-96860491c706" />
+
+</details>
+
+---
+
+## 📬 Testes no Insomnia – CRUD Disciplina
+
+### 🔹 `POST /disciplinas` – Criar Disciplina
+
+Exemplo de corpo da requisição para criar uma nova disciplina:
+
+~~~json
+{
+  "nome": "Engenharia de Software Aplicada",
+  "professor": {
+    "id": 4
+  }
+}
+~~~
+
+<details>
+  <summary>📸 Clique para ver o print da requisição POST /disciplinas</summary>
+
+  <img width="1920" height="1020" alt="criarDisciplina" src="https://github.com/user-attachments/assets/942412bf-e212-43b3-9478-bb063264c16a" />
+
+</details>
+
+---
+
+### 🔹 `GET /disciplinas` – Buscar Todas as Disciplinas
+
+Requisição para listar todas as disciplinas cadastradas.
+
+<details>
+  <summary>📸 Clique para ver o print da requisição GET /disciplinas</summary>
+
+  <img width="1920" height="1020" alt="buscarTodasDisciplinas" src="https://github.com/user-attachments/assets/696968d3-a52f-48b4-aa54-1d4a639d143a" />
+
+</details>
+
+---
+
+### 🔹 `GET /disciplinas/{id}` – Buscar Disciplina por ID
+
+Requisição que retorna os dados de uma disciplina específica, conforme o ID informado na URL.
+
+<details>
+  <summary>📸 Clique para ver o print da requisição GET /disciplinas/{id}</summary>
+
+  <img width="1920" height="1020" alt="buscarDisciplinaPorId" src="https://github.com/user-attachments/assets/bb985694-a02d-4ca0-85a7-4eefe980644c" />
+
+</details>
+
+---
+
+### 🔹 `PUT /disciplinas/{id}` – Atualizar Disciplina
+
+Requisição que atualiza os dados de uma disciplina específica.
+
+<details>
+  <summary>📸 Clique para ver o print da requisição PUT /disciplinas/{id}</summary>
+
+  <img alt="atualizarDisciplinaPorId" width="1920" height="1020" src="https://github.com/user-attachments/assets/10887cfd-8b26-42c3-9524-78794dd4765d" />
+  
+</details>
+
+---
+
+### 🔹 `DELETE /disciplinas/{id}` – Deletar Disciplina
+
+Requisição que remove uma disciplina específica, conforme o ID informado na URL.
+
+<details>
+  <summary>📸 Clique para ver o print da requisição DELETE /disciplinas/{id}</summary>
+
+  <img width="1920" height="1020" alt="deletarDisciplinaPorId" src="https://github.com/user-attachments/assets/e18698d0-efe5-4385-a79c-f5bfe7da163e" />
+
+</details>
+
+---
+
+## 📬 Testes no Insomnia – Matrículas & Histórico
+
+### 🔹 `POST /matriculas` – Criar Matrícula
+
+Exemplo de corpo da requisição para matricular um aluno em uma disciplina:
+
+~~~json
+{
+	"aluno": {
+		"id": 1
+	},
+	"disciplina": {
+		"id": 2
+	}
+}
+~~~
+
+<details>
+  <summary>📸 Clique para ver o print da requisição POST /matriculas</summary>
+
+  <img width="1920" height="1020" alt="matricular" src="https://github.com/user-attachments/assets/9821685a-a8a7-457c-96f0-38edd495bdcd" />
+
+</details>
+
+---
+
+### 🔹 `PATCH /matriculas/atualizar-notas/{id}` – Atualizar Notas da Matrícula
+
+Exemplo de corpo da requisição para atualizar as notas de uma matrícula:
+
+~~~json
+{
+	"nota1": 7,
+	"nota2": 7
+}
+~~~
+
+<details>
+  <summary>📸 Clique para ver o print da requisição PATCH /matriculas/atualizar-notas/{id}</summary>
+
+  <img width="1920" height="1020" alt="atualizarNotas" src="https://github.com/user-attachments/assets/75c16398-7684-451f-a8ea-99bec5c9853f" />
+
+</details>
+
+---
+
+### 🔹 `PATCH /matriculas/trancar/{id}` – Trancar Matrícula
+
+Requisição responsável por alterar o status da matrícula para **TRANCADA** (ou equivalente na regra de negócio).
+
+<details>
+  <summary>📸 Clique para ver o print da requisição PATCH /matriculas/trancar/{id}</summary>
+
+  <img width="1920" height="1020" alt="trancarMatricula" src="https://github.com/user-attachments/assets/7b303f12-955f-45fd-a788-30b097e3c1ae" />
+
+</details>
+
+---
+
+### 🔹 `GET /matriculas/emitir-historico/{alunoId}` – Emitir Histórico do Aluno
+
+Requisição que consolida as matrículas, disciplinas e notas do aluno e retorna seu histórico acadêmico.
+
+<details>
+  <summary>📸 Clique para ver o print da requisição GET /matriculas/emitir-historico/{alunoId}</summary>
+
+  <img width="1920" height="1020" alt="emitirHistorico" src="https://github.com/user-attachments/assets/e43821f2-e047-4593-8e58-0f1d0f118523" />
+
+</details>
+
+---
 
 ## ✅ Observações Finais
 
-* O projeto segue a arquitetura padrão **Spring Boot REST API**.
-* As respostas retornam objetos JSON conforme o modelo `Aluno`.
-* Todas as requisições foram testadas via **Insomnia** e validadas no banco de dados pelo **DBeaver**.
-
----
+- O projeto segue a arquitetura padrão de uma **Spring Boot REST API**.  
+- As respostas são retornadas em **JSON**, de acordo com os modelos (`Aluno`, `Professor`, `Disciplina`, `Matricula`, etc.).  
+- Toda a API foi testada via **Insomnia** e os dados confirmados no **DBeaver**.  
