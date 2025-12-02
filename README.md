@@ -247,7 +247,7 @@ Requisição que deleta os dados de um professor específico, conforme o ID info
 
 ## 📊 Banco de Dados – Professores (PostgreSQL)
 
-Para o módulo de professores, também é utilizado o **PostgreSQL**, com a tabela `professor` gerenciada pelo **Spring Data JPA**.
+Tabela `professor` gerenciada pelo **Spring Data JPA**.
 
 <details>
   <summary>📸 Clique para ver o print da tabela de professor no DBeaver</summary>
@@ -334,6 +334,19 @@ Requisição que remove uma disciplina específica, conforme o ID informado na U
 
 ---
 
+## 📊 Banco de Dados – Disciplina (PostgreSQL)
+
+Tabela `disciplina` gerenciada pelo **Spring Data JPA**.
+
+<details>
+  <summary>📸 Clique para ver o print da tabela de disciplina no DBeaver</summary>
+
+  <img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/3328a72c-43ad-473f-871a-d92d33a3fecb" />
+
+</details>
+
+---
+
 ## 📬 Testes no Insomnia – Matrículas & Histórico
 
 ### 🔹 `POST /matriculas` – Criar Matrícula
@@ -401,6 +414,19 @@ Requisição que consolida as matrículas, disciplinas e notas do aluno e retorn
   <summary>📸 Clique para ver o print da requisição GET /matriculas/emitir-historico/{alunoId}</summary>
 
   <img width="1920" height="1020" alt="emitirHistorico" src="https://github.com/user-attachments/assets/e43821f2-e047-4593-8e58-0f1d0f118523" />
+
+</details>
+
+---
+
+## 📊 Banco de Dados – matricula_aluno (PostgreSQL)
+
+Tabela `matricula_aluno` gerenciada pelo **Spring Data JPA**.
+
+<details>
+  <summary>📸 Clique para ver o print da tabela de disciplina no DBeaver</summary>
+
+  <img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/ed2395b0-9f1d-4296-b265-6f535884bb29" />
 
 </details>
 
