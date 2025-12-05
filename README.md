@@ -2,7 +2,7 @@
 
 ## 📘 Descrição do Projeto
 
-Esta é uma **API REST** desenvolvida por **Kayo Brenno**, como **projeto de conclusão da disciplina de Tecnologia para Back-End e Banco de Dados Avançado**, com foco em construção de serviços RESTful utilizando **Java com Spring Boot** e integração com **PostgreSQL**.
+Esta é uma **API REST** desenvolvida por **Kayo Brenno**, como **projeto de conclusão das disciplinas de Tecnologia para Back-End e Banco de Dados Avançado**, com foco em construção de serviços RESTful utilizando **Java com Spring Boot** e integração com **PostgreSQL**.
 
 O objetivo da API é **gerenciar o fluxo acadêmico do aluno no sistema Aluno Online**, permitindo operações como:
 
