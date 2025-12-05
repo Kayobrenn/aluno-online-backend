@@ -432,6 +432,40 @@ Tabela `matricula_aluno` gerenciada pelo **Spring Data JPA**.
 
 ---
 
+## 📊 View – vw_historico_aluno
+
+A view `vw_historico_aluno` foi criada para centralizar e facilitar a emissão dos **históricos acadêmicos dos alunos**, reunindo informações de matrícula, notas, disciplinas e professores em uma única consulta.
+Seu acesso e gerenciamento são realizados por meio do **Spring Data JPA**, garantindo integração eficiente com a camada de persistência do sistema.
+```sql
+CREATE VIEW vw_historico_aluno AS
+SELECT
+    ma.id                  AS matricula_id,
+    a.id                   AS aluno_id,
+    a.nomecompleto         AS nome_aluno,
+    a.email                AS email_aluno,
+    a.cpf                  AS cpf_aluno,
+    d.id                   AS disciplina_id,
+    d.nome                 AS nome_disciplina,
+    p.id                   AS professor_id,
+    p.nomecompleto         AS nome_professor,
+    ma.nota1               AS nota1,
+    ma.nota2               AS nota2,
+    (ma.nota1 + ma.nota2) / 2.0 AS media,
+    ma.status              AS status_matricula
+FROM matricula_aluno ma
+JOIN aluno a        ON a.id = ma.aluno_id
+JOIN disciplina d   ON d.id = ma.disciplina_id
+JOIN professor p    ON p.id = d.professor_id;
+```
+<details>
+  <summary>📸 Clique para ver o print da view no DBeaver</summary>
+
+  <img width="1920" height="1020" alt="image_view" src="https://github.com/user-attachments/assets/890663db-43ae-49c2-9ad8-54a2a125a8f9" />
+
+</details>
+
+---
+
 ## ✅ Observações Finais
 
 - O projeto segue a arquitetura padrão de uma **Spring Boot REST API**.  
