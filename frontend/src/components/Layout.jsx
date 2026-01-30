@@ -10,22 +10,33 @@ export default function Layout({ children }) {
             {/* Sidebar */}
             <aside
                 className={[
-                    "bg-sky-800 text-white p-4",
+                    "bg-slate-800 text-white p-4 rounded-tr-3xl rounded-br-3xl ",
                     "transition-all duration-300 ease-in-out",
                     aberta ? "w-64" : "w-16",
                 ].join(" ")}
             >
                 {/* Topo da sidebar */}
                 <div className="flex items-center justify-between mb-6">
-                    <h2
+                    <div
                         className={[
-                            "text-xl font-bold whitespace-nowrap overflow-hidden",
-                            "transition-all duration-300 ease-in-out",
-                            aberta ? "opacity-100 translate-x-0 max-w-[200px]" : "opacity-0 -translate-x-2 max-w-0",
+                            "flex items-center gap-2 overflow-hidden",
+                            "transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1)",
+                            "w-[220px]",
+                            aberta
+                                ? "opacity-100 translate-x-0"
+                                : "opacity-0 -translate-x-2"
                         ].join(" ")}
                     >
-                        Aluno Online
-                    </h2>
+                        <img
+                            src="/alunoonline.PNG"
+                            alt="Aluno Online"
+                            className="h-8 w-8 shrink-0"
+                        />
+
+                        <h2 className="text-xl font-bold whitespace-nowrap">
+                            Aluno Online
+                        </h2>
+                    </div>
 
                     {/* Botão hambúrguer */}
                     <button
@@ -73,7 +84,7 @@ function NavItem({ to, aberta, icon, children }) {
                 [
                     "relative flex items-center gap-5 px-2 py-2 rounded overflow-hidden",
                     "transition-colors",
-                    isActive ? "bg-sky-600" : "hover:bg-sky-600",
+                    isActive ? "bg-sky-900" : "hover:bg-sky-800",
                 ].join(" ")
             }
         >

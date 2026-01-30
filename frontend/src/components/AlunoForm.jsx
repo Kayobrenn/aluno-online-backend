@@ -9,53 +9,64 @@ export default function AlunoForm({
                                       onSubmit,
                                       onCancelar,
                                       salvando,
+                                      erro,
                                   }) {
-    const titulo = editandoId ? "Editar aluno" : "Cadastrar aluno"
+
+    function aplicarMascaraCPF(valor) {
+        const n = valor.replace(/\D/g, "").slice(0, 11)
+        return n
+            .replace(/^(\d{3})(\d)/, "$1.$2")
+            .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+            .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})$/, "$1.$2.$3-$4")
+    }
+
+    function classeInput(valor) {
+        return [
+            "border rounded-lg px-3 py-2",
+            "focus:outline-none focus:ring-2",
+            erro && !valor ? "border-red-400 focus:ring-red-200" : "border-slate-300 focus:ring-slate-300",
+            salvando ? "bg-slate-50" : "bg-white",
+        ].join(" ")
+    }
 
     return (
-        <div className="mt-2">
-            <h2 className="sr-only">{titulo}</h2>
+        <div>
 
             <form onSubmit={onSubmit} className="grid gap-3">
-                <div className="grid gap-1">
-                    <label className="text-sm text-slate-700">Nome completo</label>
-                    <input
-                        placeholder="Digite o nome completo"
-                        value={nomeCompleto}
-                        onChange={(e) => setNomeCompleto(e.target.value)}
-                        disabled={salvando}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:bg-slate-100"
-                    />
-                </div>
+                <input
+                    placeholder="Nome completo"
+                    value={nomeCompleto}
+                    onChange={(e) => setNomeCompleto(e.target.value)}
+                    disabled={salvando}
+                    className={classeInput(nomeCompleto.trim())}
+                />
 
-                <div className="grid gap-1">
-                    <label className="text-sm text-slate-700">Email</label>
-                    <input
-                        placeholder="Digite o email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        disabled={salvando}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:bg-slate-100"
-                    />
-                </div>
+                <input
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={salvando}
+                    className={classeInput(email.trim())}
+                />
 
-                <div className="grid gap-1">
-                    <label className="text-sm text-slate-700">CPF</label>
-                    <input
-                        placeholder="CPF (somente números)"
-                        value={cpf}
-                        onChange={(e) => setCpf(e.target.value)}
-                        disabled={salvando}
-                        inputMode="numeric"
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:bg-slate-100"
-                    />
-                </div>
+                <input
+                    placeholder="CPF"
+                    value={cpf}
+                    onChange={(e) => setCpf(aplicarMascaraCPF(e.target.value))}
+                    disabled={salvando}
+                    className={classeInput(cpf)}
+                    onBeforeInput={(e) => {
+                        const data = e.data ?? ""
+                        if (data && /\D/.test(data)) e.preventDefault()
+                    }}
+                />
 
-                <div className="mt-2 flex items-center gap-2">
+
+                <div className="flex items-center gap-2 pt-2">
                     <button
                         type="submit"
                         disabled={salvando}
-                        className="rounded-lg bg-sky-700 px-4 py-2 text-white hover:bg-slate-700 disabled:opacity-60"
+                        className="rounded-lg bg-sky-800 px-4 py-2 text-white hover:bg-slate-700 disabled:opacity-60"
                     >
                         {salvando ? "Salvando..." : editandoId ? "Salvar alterações" : "Cadastrar"}
                     </button>
@@ -69,6 +80,8 @@ export default function AlunoForm({
                         Cancelar
                     </button>
                 </div>
+
+                {erro && <p className="text-sm text-red-600">{erro}</p>}
             </form>
         </div>
     )

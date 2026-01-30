@@ -5,7 +5,8 @@ import { listarAlunos, criarAluno, buscarAlunoPorId, atualizarAluno, deletarAlun
 export default function AlunosPage() {
     const [alunos, setAlunos] = useState([])
     const [carregando, setCarregando] = useState(false)
-    const [erro, setErro] = useState("")
+    const [erroPagina, setErroPagina] = useState("")
+    const [erroModal, setErroModal] = useState("")
     const [sucesso, setSucesso] = useState("")
 
     const [nomeCompleto, setNomeCompleto] = useState("")
@@ -21,7 +22,7 @@ export default function AlunosPage() {
     const [msg, setMsg] = useState("")
 
     const [pagina, setPagina] = useState(1)
-    const pageSize = 20
+    const pageSize = 5
 
     const [modalAberto, setModalAberto] = useState(false)
 
@@ -32,7 +33,7 @@ export default function AlunosPage() {
     const paginaAtual = listaBase.slice(inicio, inicio + pageSize)
 
     useEffect(() => {
-        if (pagina > totalPaginas) setPagina(totalPaginas) // evita página “vazia” quando a lista muda
+        if (pagina > totalPaginas) setPagina(totalPaginas) // evita página vazia
     }, [totalPaginas, pagina])
 
     useEffect(() => {
@@ -41,7 +42,7 @@ export default function AlunosPage() {
 
     useEffect(() => {
         function onKeyDown(e) {
-            if (e.key === "Escape") fecharModal() // fecha o modal no ESC
+            if (e.key === "Escape") fecharModal()
         }
         if (modalAberto) document.addEventListener("keydown", onKeyDown)
         return () => document.removeEventListener("keydown", onKeyDown)
@@ -50,11 +51,11 @@ export default function AlunosPage() {
     async function carregar() {
         try {
             setCarregando(true)
-            setErro("")
+            setErroPagina("")
             const data = await listarAlunos()
             setAlunos(Array.isArray(data) ? data : [])
         } catch (e) {
-            setErro("Falha ao buscar alunos. Confirme se o backend está rodando em http://localhost:8080.")
+            setErroPagina("Falha ao buscar alunos, tente novamente!")
         } finally {
             setCarregando(false)
         }
@@ -100,14 +101,28 @@ export default function AlunosPage() {
         setNomeCompleto("")
         setEmail("")
         setCpf("")
-        setErro("")
+        setErroModal("")
         setMsg("")
         setModalAberto(true)
     }
 
+    function validarFormulario() {
+        const nome = nomeCompleto.trim()
+        const mail = email.trim()
+        const doc = cpf.trim()
+
+        if (!nome) return "Nome completo é obrigatório."
+        if (!mail) return "Email é obrigatório."
+        if (!doc) return "CPF é obrigatório."
+        if (!mail.includes("@")) return "Email inválido."
+        if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(cpf.trim())) return "CPF inválido. Use o formato 000.000.000-00."
+
+        return ""
+    }
+
     async function abrirModalEditar(id) {
         try {
-            setErro("")
+            setErroModal("")
             const aluno = await buscarAlunoPorId(id)
             setEditandoId(id)
             setNomeCompleto(aluno.nomeCompleto ?? "")
@@ -115,7 +130,7 @@ export default function AlunosPage() {
             setCpf(aluno.cpf ?? "")
             setModalAberto(true)
         } catch {
-            setErro("Não consegui carregar o aluno para edição.")
+            setErroModal("Não foi possível carregar o aluno para edição.")
         }
     }
 
@@ -124,14 +139,14 @@ export default function AlunosPage() {
         if (!ok) return
 
         try {
-            setErro("")
+            setErroPagina("")
             setSucesso("")
             await deletarAluno(id)
             await carregar()
             setSucesso("Aluno excluído!")
             setTimeout(() => setSucesso(""), 2000)
         } catch {
-            setErro("Não consegui excluir o aluno.")
+            setErroPagina("Não consegui excluir o aluno.")
         }
     }
 
@@ -141,13 +156,15 @@ export default function AlunosPage() {
         setNomeCompleto("")
         setEmail("")
         setCpf("")
-        setErro("")
+        setErroModal("")
     }
 
     return (
         <div style={{ padding: 16, fontFamily: "Arial" }}>
             <div className="flex items-center justify-between">
-                <h1>Gerenciamento Aluno</h1>
+                <h1 className="text-2xl font-semibold text-slate-800">
+                    Gerenciamento de Alunos
+                </h1>
 
                 <button
                     type="button"
@@ -237,11 +254,11 @@ export default function AlunosPage() {
             )}
 
             {carregando && <p>Carregando alunos...</p>}
-            {erro && <p style={{ color: "red" }}>{erro}</p>}
+            {erroPagina && <p style={{ color: "red" }}>{erroPagina}</p>}
 
-            {!carregando && !erro && (
-                <>
-                    <div className="mt-4 flex items-center justify-between">
+            {!carregando && !erroPagina && (
+                <div className="mt-6 bg-white rounded-xl shadow p-4">
+                    <div className="flex items-center justify-between">
                         <p className="text-sm text-slate-600">
                             Mostrando {total === 0 ? 0 : inicio + 1}–{Math.min(inicio + pageSize, total)} de {total}
                         </p>
@@ -255,7 +272,9 @@ export default function AlunosPage() {
                                 Anterior
                             </button>
 
-                            <span className="text-slate-600">Página {pagina} de {totalPaginas}</span>
+                            <span className="text-slate-600">
+                                Página {pagina} de {totalPaginas}
+                            </span>
 
                             <button
                                 className="px-3 py-1 rounded border hover:bg-slate-50 disabled:opacity-50"
@@ -267,82 +286,82 @@ export default function AlunosPage() {
                         </div>
                     </div>
 
-                    <table border="1" cellPadding="8" style={{ borderCollapse: "collapse", marginTop: 12, width: "100%" }}>
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome completo</th>
-                            <th>Email</th>
-                            <th>CPF</th>
-                            <th>Ações</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        {paginaAtual.map((a) => (
-                            <tr key={a.id}>
-                                <td>{a.id}</td>
-                                <td>{a.nomeCompleto}</td>
-                                <td>{a.email}</td>
-                                <td>{a.cpf}</td>
-
-                                <td>
-                                    <div className="flex items-center justify-center gap-3">
-                                    <button
-                                            title="Editar aluno"
-                                            onClick={() => abrirModalEditar(a.id)}
-                                            className="text-blue-600 hover:text-blue-800 transition-colors"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                strokeWidth={1.5}
-                                                stroke="currentColor"
-                                                className="w-5 h-5"
-                                                aria-hidden="true"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                                                />
-                                            </svg>
-                                        </button>
-
-                                        <button
-                                            title="Excluir aluno"
-                                            onClick={() => excluirAluno(a.id, a.nomeCompleto)}
-                                            className="text-red-600 hover:text-red-800 transition-colors"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                strokeWidth={1.5}
-                                                stroke="currentColor"
-                                                className="w-5 h-5"
-                                                aria-hidden="true"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </td>
+                    <div className="mt-4 overflow-x-auto">
+                        <table className="w-full border-collapse">
+                            <thead>
+                            <tr className="text-left border-b">
+                                <th className="py-3 px-2 w-20">ID</th>
+                                <th className="py-3 px-2">Nome completo</th>
+                                <th className="py-3 px-2">Email</th>
+                                <th className="py-3 px-2 w-44 text-center">CPF</th>
+                                <th className="py-3 px-2 w-28 text-center">Ações</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </>
+                            </thead>
+
+                            <tbody>
+                            {paginaAtual.map((a) => (
+                                <tr key={a.id} className="border-b last:border-b-0">
+                                    <td className="py-3 px-2">{a.id}</td>
+                                    <td className="py-3 px-2">{a.nomeCompleto}</td>
+                                    <td className="py-3 px-2">{a.email}</td>
+                                    <td className="py-3 px-2 text-center">{a.cpf}</td>
+                                    <td className="py-3 px-2">
+                                        <div className="flex items-center justify-center gap-3">
+                                            <button
+                                                title="Editar aluno"
+                                                onClick={() => abrirModalEditar(a.id)}
+                                                className="text-blue-600 hover:text-blue-800 transition-colors"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth={1.5}
+                                                    stroke="currentColor"
+                                                    className="w-5 h-5"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                                    />
+                                                </svg>
+                                            </button>
+
+                                            <button
+                                                title="Excluir aluno"
+                                                onClick={() => excluirAluno(a.id, a.nomeCompleto)}
+                                                className="text-red-600 hover:text-red-800 transition-colors"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth={1.5}
+                                                    stroke="currentColor"
+                                                    className="w-5 h-5"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             )}
 
             {modalAberto && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={fecharModal}>
                     <div className="w-full max-w-xl rounded-xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
                         <div className="mb-4 flex items-center justify-between">
-                            <h2 className="text-xl font-semibold">
-                                {editandoId ? "Alterar aluno" : "Cadastrar aluno"}
-                            </h2>
+                            <h2 className="text-xl font-semibold">{editandoId ? "Editar aluno" : "Cadastrar aluno"}</h2>
+
                             <button
                                 type="button"
                                 className="rounded px-2 py-1 hover:bg-slate-100"
@@ -362,13 +381,21 @@ export default function AlunosPage() {
                             setEmail={setEmail}
                             setCpf={setCpf}
                             salvando={salvando}
+                            erro={erroModal}
                             onCancelar={fecharModal}
                             onSubmit={async (e) => {
                                 e.preventDefault()
+
+                                const mensagem = validarFormulario()
+                                if (mensagem) {
+                                    setErroModal(mensagem)
+                                    return
+                                }
+
                                 try {
                                     setSucesso("")
                                     setSalvando(true)
-                                    setErro("")
+                                    setErroModal("")
 
                                     if (editandoId) {
                                         await atualizarAluno(editandoId, { nomeCompleto, email, cpf })
@@ -386,7 +413,7 @@ export default function AlunosPage() {
                                     setSucesso("Salvo com sucesso!")
                                     setTimeout(() => setSucesso(""), 2000)
                                 } catch (err) {
-                                    setErro("Não consegui salvar. Verifique os campos e se CPF/email já existem.")
+                                    setErroModal("Não consegui salvar. Verifique os campos e se CPF/email já existem.")
                                 } finally {
                                     setSalvando(false)
                                 }
